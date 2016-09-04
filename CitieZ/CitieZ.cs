@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using CitieZ.Db;
 using Terraria;
 using TerrariaApi.Server;
 
@@ -12,6 +13,8 @@ namespace CitieZ
         {
         }
 
+        public static CityManager Cities { get; private set; }
+
         public override string Author => "Renerte";
         public override string Name => "CitieZ";
         public override string Description => "Configurable cities system for your TShock server!";
@@ -19,7 +22,12 @@ namespace CitieZ
 
         public override void Initialize()
         {
-            throw new NotImplementedException();
+            ServerApi.Hooks.GameInitialize.Register(this, OnGameInitialize);
+        }
+
+        protected void OnGameInitialize(EventArgs e)
+        {
+            //TODO: Needs db initialization - put CityManager here afterwards.
         }
     }
 }
