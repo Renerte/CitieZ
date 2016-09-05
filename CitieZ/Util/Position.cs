@@ -1,0 +1,22 @@
+﻿namespace CitieZ.Util
+{
+    public class Position
+    {
+        public int X;
+        public int Y;
+
+        public Position(int x, int y)
+        {
+            X = x;
+            Y = y;
+        }
+
+        public Position(int[] coords)
+        {
+            if (coords.Length != 2)
+                throw new WrongArraySizeException();
+            X = coords[0];
+            Y = coords[1];
+        }
+    }
+}

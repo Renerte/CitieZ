@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using CitieZ.Util;
 using MySql.Data.MySqlClient;
 using Terraria;
 using TShockAPI.DB;
@@ -32,7 +33,7 @@ namespace CitieZ.Db
                     cities.Add(new City(
                         result.Get<string>("Name"),
                         result.Get<string>("Region"),
-                        result.Get<string>("Warp"),
+                        new Position(result.Get<string>("Warp").Split(',').Select(int.Parse).ToArray()),
                         result.Get<string>("Discovered").Split(',').Select(int.Parse).ToList()));
             }
         }
