@@ -14,7 +14,7 @@
         public Position(int[] coords)
         {
             if (coords.Length != 2)
-                throw new WrongArraySizeException();
+                throw new WrongArraySizeException("Expected 2 coords: x and y");
             X = coords[0];
             Y = coords[1];
         }
