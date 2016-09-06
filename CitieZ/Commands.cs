@@ -1,17 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TShockAPI;
+﻿using TShockAPI;
 
 namespace CitieZ
 {
     public static class Commands
     {
-        public static void City(CommandArgs e)
+        public static async void City(CommandArgs e)
         {
-            e.Player.SendInfoMessage("You will be teleported, as soon as Renerte finishes this functionality ;)");
+            if (e.Parameters.Count != 1)
+            {
+                e.Player.SendErrorMessage("Use: /city name");
+                return;
+            }
+            var city = await CitieZ.Cities.GetAsync(e.Player, e.Parameters[0]);
+            if (city != null)
+            {
+                e.Player.SendInfoMessage(string.Format(CitieZ.Config.TeleportingToCity, city.Name));
+                e.Player.Teleport(city.Warp.X, city.Warp.Y);
+            }
+            else
+            {
+                e.Player.SendErrorMessage(string.Format(CitieZ.Config.NoSuchCity, e.Parameters[0]));
+            }
         }
     }
 }
