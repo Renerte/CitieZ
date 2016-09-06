@@ -14,8 +14,8 @@ namespace CitieZ.Db
     public class CityManager
     {
         private readonly List<City> cities = new List<City>();
-        private IDbConnection db;
         private readonly object syncLock = new object();
+        private IDbConnection db;
 
         public CityManager(IDbConnection db)
         {
@@ -40,6 +40,8 @@ namespace CitieZ.Db
                         new Position(result.Get<string>("Warp").Split(',').Select(int.Parse).ToArray()),
                         result.Get<string>("Discovered").Split(',').Select(int.Parse).ToList()));
             }
+
+            TShock.Log.ConsoleInfo($"[CitieZ] Loaded {cities.Count} cities.");
         }
 
         public async Task<City> GetAsync(TSPlayer player, string name)
