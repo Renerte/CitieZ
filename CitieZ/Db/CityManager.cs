@@ -25,7 +25,8 @@ namespace CitieZ.Db
                 new SqlColumn("Name", MySqlDbType.VarChar, 32) {Unique = true, Length = 32},
                 new SqlColumn("Region", MySqlDbType.Text),
                 new SqlColumn("Warp", MySqlDbType.Text),
-                new SqlColumn("Discovered", MySqlDbType.Text)));
+                new SqlColumn("Discovered", MySqlDbType.Text),
+                new SqlColumn("WorldID", MySqlDbType.Int32)));
 
             using (var result = db.QueryReader("SELECT * FROM Cities WHERE WorldID = @0", Main.worldID))
             {
