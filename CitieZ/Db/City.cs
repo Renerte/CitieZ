@@ -3,7 +3,7 @@ using CitieZ.Util;
 
 namespace CitieZ.Db
 {
-    internal class City
+    public class City
     {
         public City(string name, string regionName, Position warp, List<int> discovered)
         {

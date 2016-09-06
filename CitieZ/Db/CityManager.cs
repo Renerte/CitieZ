@@ -1,9 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Threading.Tasks;
 using CitieZ.Util;
 using MySql.Data.MySqlClient;
 using Terraria;
+using TShockAPI;
 using TShockAPI.DB;
 
 namespace CitieZ.Db
@@ -12,7 +15,7 @@ namespace CitieZ.Db
     {
         private readonly List<City> cities = new List<City>();
         private IDbConnection db;
-        private object syncLock = new object();
+        private readonly object syncLock = new object();
 
         public CityManager(IDbConnection db)
         {
@@ -37,6 +40,21 @@ namespace CitieZ.Db
                         new Position(result.Get<string>("Warp").Split(',').Select(int.Parse).ToArray()),
                         result.Get<string>("Discovered").Split(',').Select(int.Parse).ToList()));
             }
+        }
+
+        public async Task<City> GetAsync(TSPlayer player, string name)
+        {
+            return await Task.Run(() =>
+            {
+                lock (syncLock)
+                {
+                    return
+                        cities.Find(
+                            c =>
+                                c.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase) &&
+                                c.Discovered.Contains(player.User.ID));
+                }
+            });
         }
     }
 }
