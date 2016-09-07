@@ -116,6 +116,24 @@ namespace CitieZ
             }
 
             #endregion
+
+            #region Commands
+
+            //Allows overriding of already created commands.
+            Action<Command> Add = c =>
+            {
+                //Finds any commands with names and aliases that match the new command and removes them.
+                TShockAPI.Commands.ChatCommands.RemoveAll(c2 => c2.Names.Exists(s2 => c.Names.Contains(s2)));
+                //Then adds the new command.
+                TShockAPI.Commands.ChatCommands.Add(c);
+            };
+
+            Add(new Command(Commands.City, "city")
+            {
+                HelpText = "Teleports to city, if player has discovered it"
+            });
+
+            #endregion
         }
 
         private void OnGamePostInitialize(EventArgs e)
