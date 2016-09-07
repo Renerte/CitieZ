@@ -12,7 +12,7 @@ namespace CitieZ
                 return;
             }
             var city = await CitieZ.Cities.GetAsync(e.Player, e.Parameters[0]);
-            if (city != null)
+            if ((city != null) && (city.Discovered.Contains(e.Player.User.ID) || e.Player.HasPermission("citiez.all")))
             {
                 e.Player.SendInfoMessage(string.Format(CitieZ.Config.TeleportingToCity, city.Name));
                 e.Player.Teleport(city.Warp.X, city.Warp.Y);

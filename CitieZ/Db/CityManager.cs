@@ -53,8 +53,7 @@ namespace CitieZ.Db
                     return
                         cities.Find(
                             c =>
-                                c.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase) &&
-                                c.Discovered.Contains(player.User.ID));
+                                    c.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
                 }
             });
         }
