@@ -14,8 +14,8 @@ namespace CitieZ.Db
     public class CityManager
     {
         private readonly List<City> cities = new List<City>();
-        private readonly object syncLock = new object();
         private readonly IDbConnection db;
+        private readonly object syncLock = new object();
 
         public CityManager(IDbConnection db)
         {
@@ -38,7 +38,9 @@ namespace CitieZ.Db
                         result.Get<string>("Name"),
                         result.Get<string>("Region"),
                         new Position(result.Get<string>("Warp").Split(',').Select(int.Parse).ToArray()),
-                        result.Get<string>("Discovered").Split(',').Select(int.Parse).ToList()));
+                        string.IsNullOrWhiteSpace(result.Get<string>("Discovered"))
+                            ? new List<int>()
+                            : result.Get<string>("Discovered").Split(',').Select(int.Parse).ToList()));
             }
 
             TShock.Log.ConsoleInfo($"[CitieZ] Loaded {cities.Count} cities.");
