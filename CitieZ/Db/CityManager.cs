@@ -70,7 +70,7 @@ namespace CitieZ.Db
             });
         }
 
-        public async Task<City> GetAsync(TSPlayer player, string name)
+        public async Task<City> GetAsync(string name)
         {
             return await Task.Run(() =>
             {
