@@ -15,7 +15,7 @@ namespace CitieZ.Db
     {
         private readonly List<City> cities = new List<City>();
         private readonly object syncLock = new object();
-        private IDbConnection db;
+        private readonly IDbConnection db;
 
         public CityManager(IDbConnection db)
         {
@@ -42,6 +42,32 @@ namespace CitieZ.Db
             }
 
             TShock.Log.ConsoleInfo($"[CitieZ] Loaded {cities.Count} cities.");
+        }
+
+        public async Task<bool> AddAsync(string name, string regionName, Position warpPosition)
+        {
+            return await Task.Run(() =>
+            {
+                try
+                {
+                    lock (syncLock)
+                    {
+                        cities.Add(new City(name, regionName, warpPosition, new List<int>()));
+                        return
+                            db.Query(
+                                "INSERT INTO Cities (Name, Region, Warp, WorldID) VALUES (@0, @1, @2, @3)",
+                                name,
+                                regionName,
+                                warpPosition,
+                                Main.worldID) > 0;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    TShock.Log.Error(ex.ToString());
+                    return false;
+                }
+            });
         }
 
         public async Task<City> GetAsync(TSPlayer player, string name)

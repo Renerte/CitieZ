@@ -133,6 +133,11 @@ namespace CitieZ
                 HelpText = "Teleports to city, if player has discovered it"
             });
 
+            Add(new Command(Commands.Manage, "citiez")
+            {
+                HelpText = "Manages cities"
+            });
+
             #endregion
         }
 
