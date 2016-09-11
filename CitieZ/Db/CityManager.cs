@@ -85,5 +85,32 @@ namespace CitieZ.Db
                 }
             });
         }
+
+        public async Task<bool> SetWarpAsync(string name, Position warpPosition)
+        {
+            var query = db.GetSqlType() == SqlType.Mysql
+                ? "UPDATE Cities SET Warp = @0 WHERE Name = @1"
+                : "UPDATE Cities SET Warp = @0 WHERE Name = @1 COLLATE NOCASE";
+
+            return await Task.Run(() =>
+            {
+                var city = GetAsync(name).Result;
+                try
+                {
+                    lock (syncLock)
+                    {
+                        city.Warp = warpPosition;
+                        return db.Query(query,
+                                   warpPosition,
+                                   name) > 0;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    TShock.Log.Error(ex.ToString());
+                    return false;
+                }
+            });
+        }
     }
 }

@@ -47,6 +47,15 @@ namespace CitieZ
                                 new Position(e.Player.TileX, e.Player.TileY)))
                         e.Player.SendInfoMessage($"Added city {e.Parameters[1]} with region {e.Parameters[2]}.");
                     break;
+                case "setwarp":
+                    if (e.Parameters.Count < 2)
+                    {
+                        e.Player.SendErrorMessage("Use: /citiez setwarp name");
+                        break;
+                    }
+                    if (await CitieZ.Cities.SetWarpAsync(e.Parameters[1], new Position(e.Player.TileX, e.Player.TileY)))
+                        e.Player.SendInfoMessage($"Successfully set warp for city {e.Parameters[1]}");
+                    break;
             }
         }
     }
