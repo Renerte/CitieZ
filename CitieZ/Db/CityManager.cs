@@ -14,8 +14,8 @@ namespace CitieZ.Db
     public class CityManager
     {
         private readonly List<City> cities = new List<City>();
+        private readonly IDbConnection db;
         private readonly object syncLock = new object();
-        private IDbConnection db;
 
         public CityManager(IDbConnection db)
         {
@@ -38,13 +38,41 @@ namespace CitieZ.Db
                         result.Get<string>("Name"),
                         result.Get<string>("Region"),
                         new Position(result.Get<string>("Warp").Split(',').Select(int.Parse).ToArray()),
-                        result.Get<string>("Discovered").Split(',').Select(int.Parse).ToList()));
+                        string.IsNullOrWhiteSpace(result.Get<string>("Discovered"))
+                            ? new List<int>()
+                            : result.Get<string>("Discovered").Split(',').Select(int.Parse).ToList()));
             }
 
             TShock.Log.ConsoleInfo($"[CitieZ] Loaded {cities.Count} cities.");
         }
 
-        public async Task<City> GetAsync(TSPlayer player, string name)
+        public async Task<bool> AddAsync(string name, string regionName, Position warpPosition)
+        {
+            return await Task.Run(() =>
+            {
+                try
+                {
+                    lock (syncLock)
+                    {
+                        cities.Add(new City(name, regionName, warpPosition, new List<int>()));
+                        return
+                            db.Query(
+                                "INSERT INTO Cities (Name, Region, Warp, WorldID) VALUES (@0, @1, @2, @3)",
+                                name,
+                                regionName,
+                                warpPosition,
+                                Main.worldID) > 0;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    TShock.Log.Error(ex.ToString());
+                    return false;
+                }
+            });
+        }
+
+        public async Task<City> GetAsync(string name)
         {
             return await Task.Run(() =>
             {
@@ -54,6 +82,84 @@ namespace CitieZ.Db
                         cities.Find(
                             c =>
                                     c.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+                }
+            });
+        }
+
+        public async Task<bool> SetWarpAsync(string name, Position warpPosition)
+        {
+            var query = db.GetSqlType() == SqlType.Mysql
+                ? "UPDATE Cities SET Warp = @0 WHERE Name = @1"
+                : "UPDATE Cities SET Warp = @0 WHERE Name = @1 COLLATE NOCASE";
+
+            return await Task.Run(() =>
+            {
+                var city = GetAsync(name).Result;
+                try
+                {
+                    lock (syncLock)
+                    {
+                        city.Warp = warpPosition;
+                        return db.Query(query,
+                                   warpPosition,
+                                   name) > 0;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    TShock.Log.Error(ex.ToString());
+                    return false;
+                }
+            });
+        }
+
+        public async Task<bool> SetRegionAsync(string name, string regionName)
+        {
+            var query = db.GetSqlType() == SqlType.Mysql
+                ? "UPDATE Cities SET Region = @0 WHERE Name = @1"
+                : "UPDATE Cities SET Region = @0 WHERE Name = @1 COLLATE NOCASE";
+
+            return await Task.Run(() =>
+            {
+                var city = GetAsync(name).Result;
+                try
+                {
+                    lock (syncLock)
+                    {
+                        city.RegionName = regionName;
+                        return db.Query(query,
+                                   regionName,
+                                   name) > 0;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    TShock.Log.Error(ex.ToString());
+                    return false;
+                }
+            });
+        }
+
+        public async Task<bool> DeleteAsync(string name)
+        {
+            var query = db.GetSqlType() == SqlType.Mysql
+                ? "DELETE FROM Cities WHERE Name = @0"
+                : "DELETE FROM Cities WHERE Name = @0 COLLATE NOCASE";
+
+            return await Task.Run(() =>
+            {
+                try
+                {
+                    lock (syncLock)
+                    {
+                        cities.RemoveAll(k => k.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+                        return db.Query(query, name) > 0;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    TShock.Log.Error(ex.ToString());
+                    return false;
                 }
             });
         }
