@@ -56,6 +56,14 @@ namespace CitieZ
                     if (await CitieZ.Cities.SetWarpAsync(e.Parameters[1], new Position(e.Player.TileX, e.Player.TileY)))
                         e.Player.SendInfoMessage($"Successfully set warp for city {e.Parameters[1]}");
                     break;
+                case "del":
+                    if (e.Parameters.Count < 2)
+                        e.Player.SendErrorMessage("Use: /citiez del name");
+                    if (await CitieZ.Cities.DeleteAsync(e.Parameters[1]))
+                        e.Player.SendInfoMessage($"Successfully deleted city {e.Parameters[1]}");
+                    else
+                        e.Player.SendErrorMessage($"Could not remove city {e.Parameters[1]}");
+                    break;
             }
         }
     }

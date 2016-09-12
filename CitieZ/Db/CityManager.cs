@@ -112,5 +112,29 @@ namespace CitieZ.Db
                 }
             });
         }
+
+        public async Task<bool> DeleteAsync(string name)
+        {
+            var query = db.GetSqlType() == SqlType.Mysql
+                ? "DELETE FROM Cities WHERE Name = @0"
+                : "DELETE FROM Cities WHERE Name = @0 COLLATE NOCASE";
+
+            return await Task.Run(() =>
+            {
+                try
+                {
+                    lock (syncLock)
+                    {
+                        cities.RemoveAll(k => k.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+                        return db.Query(query, name) > 0;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    TShock.Log.Error(ex.ToString());
+                    return false;
+                }
+            });
+        }
     }
 }
