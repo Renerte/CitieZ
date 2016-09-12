@@ -75,6 +75,9 @@ namespace CitieZ
                     else
                         e.Player.SendErrorMessage($"Could not remove city {e.Parameters[1]}");
                     break;
+                default:
+                    e.Player.SendErrorMessage("[CitieZ] Unrecognized command!");
+                    break;
             }
         }
     }
