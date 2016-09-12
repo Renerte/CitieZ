@@ -113,6 +113,33 @@ namespace CitieZ.Db
             });
         }
 
+        public async Task<bool> SetRegionAsync(string name, string regionName)
+        {
+            var query = db.GetSqlType() == SqlType.Mysql
+                ? "UPDATE Cities SET Region = @0 WHERE Name = @1"
+                : "UPDATE Cities SET Region = @0 WHERE Name = @1 COLLATE NOCASE";
+
+            return await Task.Run(() =>
+            {
+                var city = GetAsync(name).Result;
+                try
+                {
+                    lock (syncLock)
+                    {
+                        city.RegionName = regionName;
+                        return db.Query(query,
+                                   regionName,
+                                   name) > 0;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    TShock.Log.Error(ex.ToString());
+                    return false;
+                }
+            });
+        }
+
         public async Task<bool> DeleteAsync(string name)
         {
             var query = db.GetSqlType() == SqlType.Mysql

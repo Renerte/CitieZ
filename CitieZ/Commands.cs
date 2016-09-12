@@ -56,6 +56,17 @@ namespace CitieZ
                     if (await CitieZ.Cities.SetWarpAsync(e.Parameters[1], new Position(e.Player.TileX, e.Player.TileY)))
                         e.Player.SendInfoMessage($"Successfully set warp for city {e.Parameters[1]}");
                     break;
+                case "setregion":
+                    if (e.Parameters.Count < 3)
+                    {
+                        e.Player.SendErrorMessage("Use: /citiez setregion name region");
+                        break;
+                    }
+                    if (await CitieZ.Cities.SetRegionAsync(e.Parameters[1], e.Parameters[2]))
+                        e.Player.SendInfoMessage($"Successfully set region {e.Parameters[2]} to city {e.Parameters[1]}");
+                    else
+                        e.Player.SendErrorMessage("Could not set region!");
+                    break;
                 case "del":
                     if (e.Parameters.Count < 2)
                         e.Player.SendErrorMessage("Use: /citiez del name");
