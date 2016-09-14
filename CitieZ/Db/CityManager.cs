@@ -163,5 +163,43 @@ namespace CitieZ.Db
                 }
             });
         }
+
+        public async Task<City> FindByRegionAsync(string regionName)
+        {
+            return await Task.Run(() =>
+            {
+                lock (syncLock)
+                {
+                    return cities.Find(c => c.RegionName.Equals(regionName, StringComparison.InvariantCultureIgnoreCase));
+                }
+            });
+        }
+
+        public async Task<bool> DiscoverAsync(string name, TSPlayer player)
+        {
+            var query = db.GetSqlType() == SqlType.Mysql
+                ? "UPDATE Cities SET Discovered = @0 WHERE Name = @1"
+                : "UPDATE Cities SET Discovered = @0 WHERE Name = @1 COLLATE NOCASE";
+
+            return await Task.Run(() =>
+            {
+                try
+                {
+                    lock (syncLock)
+                    {
+                        var city = cities.Find(c => c.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+                        city.Discovered.Add(player.User.ID);
+                        return db.Query(query,
+                                   city.Discovered,
+                                   name) > 0;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    TShock.Log.Error(ex.ToString());
+                    return false;
+                }
+            });
+        }
     }
 }
