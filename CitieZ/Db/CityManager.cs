@@ -46,6 +46,37 @@ namespace CitieZ.Db
             TShock.Log.ConsoleInfo($"[CitieZ] Loaded {cities.Count} cities.");
         }
 
+        public async Task<bool> ReloadAsync()
+        {
+            return await Task.Run(() =>
+            {
+                try
+                {
+                    lock (syncLock)
+                    {
+                        cities.Clear();
+                        using (var result = db.QueryReader("SELECT * FROM Cities WHERE WorldID = @0", Main.worldID))
+                        {
+                            while (result.Read())
+                                cities.Add(new City(
+                                    result.Get<string>("Name"),
+                                    result.Get<string>("Region"),
+                                    new Position(result.Get<string>("Warp").Split(',').Select(int.Parse).ToArray()),
+                                    string.IsNullOrWhiteSpace(result.Get<string>("Discovered"))
+                                        ? new List<int>()
+                                        : result.Get<string>("Discovered").Split(',').Select(int.Parse).ToList()));
+                        }
+                        return true;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    TShock.Log.Error(ex.ToString());
+                    return false;
+                }
+            });
+        }
+
         public async Task<bool> AddAsync(string name, string regionName, Position warpPosition)
         {
             return await Task.Run(() =>

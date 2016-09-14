@@ -66,14 +66,13 @@ namespace CitieZ
                 e.Player.SendInfoMessage(string.Format(Config.DiscoveredCity, city.Name));
         }
 
-        private void OnReload(ReloadEventArgs e)
+        private async void OnReload(ReloadEventArgs e)
         {
             var path = Path.Combine(TShock.SavePath, "citiez.json");
             Config = Config.Read(path);
             if (!File.Exists(path))
                 Config.Write(path);
-            /*await Cities.ReloadAsync();*/
-            //TODO: CityManager reload.
+            await Cities.ReloadAsync();
             e.Player.SendSuccessMessage("[CitieZ] Reloaded config and homes!");
         }
 
