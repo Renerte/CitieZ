@@ -190,7 +190,7 @@ namespace CitieZ.Db
                         var city = cities.Find(c => c.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
                         city.Discovered.Add(player.User.ID);
                         return db.Query(query,
-                                   city.Discovered,
+                                   string.Join(",", city.Discovered),
                                    name) > 0;
                     }
                 }
