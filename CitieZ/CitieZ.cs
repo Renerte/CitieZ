@@ -34,6 +34,7 @@ namespace CitieZ
             {
                 GeneralHooks.ReloadEvent -= OnReload;
                 PlayerHooks.PlayerCommand -= OnPlayerCommand;
+                RegionHooks.RegionEntered -= OnRegionEntered;
 
                 ServerApi.Hooks.GameInitialize.Deregister(this, OnGameInitialize);
                 ServerApi.Hooks.GamePostInitialize.Deregister(this, OnGamePostInitialize);
@@ -45,6 +46,7 @@ namespace CitieZ
         {
             GeneralHooks.ReloadEvent += OnReload;
             PlayerHooks.PlayerCommand += OnPlayerCommand;
+            RegionHooks.RegionEntered += OnRegionEntered;
 
             ServerApi.Hooks.GameInitialize.Register(this, OnGameInitialize);
             ServerApi.Hooks.GamePostInitialize.Register(this, OnGamePostInitialize);
@@ -54,6 +56,14 @@ namespace CitieZ
         {
             if (e.Handled || (e.Player == null))
                 return;
+        }
+
+        private async void OnRegionEntered(RegionHooks.RegionEnteredEventArgs e)
+        {
+            var city = await Cities.FindByRegionAsync(e.Region.Name);
+            if ((city != null) && !city.Discovered.Contains(e.Player.User.ID) &&
+                await Cities.DiscoverAsync(e.Region.Name, e.Player))
+                e.Player.SendInfoMessage(string.Format(Config.DiscoveredCity, city.Name));
         }
 
         private void OnReload(ReloadEventArgs e)
