@@ -15,6 +15,7 @@ namespace CitieZ.Db
     {
         private readonly List<City> cities = new List<City>();
         private readonly IDbConnection db;
+        private readonly List<CityDiscovery> discoveries = new List<CityDiscovery>();
         private readonly object syncLock = new object();
 
         public CityManager(IDbConnection db)
@@ -51,6 +52,16 @@ namespace CitieZ.Db
             }
 
             TShock.Log.ConsoleInfo($"[CitieZ] Loaded {cities.Count} cities.");
+
+            using (var result = db.QueryReader("SELECT * FROM CityDiscoveries WHERE WorldID = @0", Main.worldID))
+            {
+                while (result.Read())
+                    discoveries.Add(new CityDiscovery(
+                        result.Get<string>("City"),
+                        result.Get<string>("Player")));
+            }
+
+            TShock.Log.ConsoleInfo($"[CitieZ] {discoveries.Count} cities have been discovered!");
         }
 
         public async Task<bool> ReloadAsync()
@@ -72,6 +83,17 @@ namespace CitieZ.Db
                                     string.IsNullOrWhiteSpace(result.Get<string>("Discovered"))
                                         ? new List<int>()
                                         : result.Get<string>("Discovered").Split(',').Select(int.Parse).ToList()));
+                        }
+
+                        discoveries.Clear();
+                        using (
+                            var result = db.QueryReader("SELECT * FROM CityDiscoveries WHERE WorldID = @0", Main.worldID)
+                        )
+                        {
+                            while (result.Read())
+                                discoveries.Add(new CityDiscovery(
+                                    result.Get<string>("City"),
+                                    result.Get<string>("Player")));
                         }
                         return true;
                     }
