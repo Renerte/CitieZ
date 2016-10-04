@@ -61,6 +61,7 @@
     <Compile Include="Commands.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Db\City.cs" />
+    <Compile Include="Db\CityDiscovery.cs" />
     <Compile Include="Db\CityManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util\Position.cs" />
