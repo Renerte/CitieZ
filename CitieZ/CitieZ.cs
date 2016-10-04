@@ -60,12 +60,15 @@ namespace CitieZ
 
         private async void OnRegionEntered(RegionHooks.RegionEnteredEventArgs e)
         {
-            if (!e.Player.HasPermission("citiez.all"))
+            var city = await Cities.FindByRegionAsync(e.Region.Name);
+            if (city != null)
             {
-                var city = await Cities.FindByRegionAsync(e.Region.Name);
-                if ((city != null) && !city.Discovered.Contains(e.Player.User.ID) &&
-                    await Cities.DiscoverAsync(e.Region.Name, e.Player))
-                    e.Player.SendInfoMessage(string.Format(Config.DiscoveredCity, city.Name));
+                var first = city.Discovered.Count == 0;
+                if (!e.Player.HasPermission("citiez.all") && !city.Discovered.Contains(e.Player.User.ID) &&
+                    await Cities.DiscoverAsync(city.Name, e.Player))
+                    if (await Cities.AddDiscoveryAsync(city.Name, e.Player))
+                        e.Player.SendInfoMessage(string.Format(Config.FirstDiscoveredCity, city.Name));
+                e.Player.SendInfoMessage(string.Format(Config.DiscoveredCity, city.Name));
             }
         }
 

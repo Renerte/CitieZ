@@ -6,6 +6,7 @@ namespace CitieZ
     public class Config
     {
         public string DiscoveredCity = "You discovered city {0}! You can now use '/city {0}' to teleport to it.";
+        public string FirstDiscoveredCity = "You are the first person to discover city {0}! Congrats!";
         public string MySqlDbName = "";
         public string MySqlHost = "";
         public string MySqlPassword = "";
