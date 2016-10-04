@@ -268,7 +268,31 @@ namespace CitieZ.Db
             {
                 lock (syncLock)
                 {
-                    return discoveries.Find(d => d.CityName == name);
+                    return discoveries.Find(d => d.CityName.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+                }
+            });
+        }
+
+        public async Task<bool> AddDiscoveryAsync(string name, TSPlayer player)
+        {
+            return await Task.Run(() =>
+            {
+                try
+                {
+                    lock (syncLock)
+                    {
+                        discoveries.Add(new CityDiscovery(name, player));
+                        return
+                            db.Query("INSERT INTO CityDiscovery (City, Player, WorldID) VALUES (@0, @1, @2)",
+                                name,
+                                player.Name,
+                                Main.worldID) > 0;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    TShock.Log.Error(ex.ToString());
+                    return false;
                 }
             });
         }
