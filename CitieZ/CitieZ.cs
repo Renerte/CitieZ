@@ -64,10 +64,10 @@ namespace CitieZ
             if (city != null)
             {
                 var first = city.Discovered.Count == 0;
-                if (!e.Player.HasPermission("citiez.all") && !city.Discovered.Contains(e.Player.User.ID) &&
-                    await Cities.DiscoverAsync(city.Name, e.Player))
-                    if (await Cities.AddDiscoveryAsync(city.Name, e.Player))
-                        e.Player.SendInfoMessage(string.Format(Config.FirstDiscoveredCity, city.Name));
+                if (e.Player.HasPermission("citiez.all") || city.Discovered.Contains(e.Player.User.ID) ||
+                    !await Cities.DiscoverAsync(city.Name, e.Player)) return;
+                if (first && await Cities.AddDiscoveryAsync(city.Name, e.Player))
+                    e.Player.SendInfoMessage(string.Format(Config.FirstDiscoveredCity, city.Name));
                 e.Player.SendInfoMessage(string.Format(Config.DiscoveredCity, city.Name));
             }
         }

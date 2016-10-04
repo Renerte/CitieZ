@@ -283,7 +283,7 @@ namespace CitieZ.Db
                     {
                         discoveries.Add(new CityDiscovery(name, player));
                         return
-                            db.Query("INSERT INTO CityDiscovery (City, Player, WorldID) VALUES (@0, @1, @2)",
+                            db.Query("INSERT INTO CityDiscoveries (City, Player, WorldID) VALUES (@0, @1, @2)",
                                 name,
                                 player.Name,
                                 Main.worldID) > 0;
