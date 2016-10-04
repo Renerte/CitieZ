@@ -58,7 +58,7 @@ namespace CitieZ.Db
                 while (result.Read())
                     discoveries.Add(new CityDiscovery(
                         result.Get<string>("City"),
-                        result.Get<string>("Player")));
+                        TShock.Players.First(p => p.Name == result.Get<string>("Player"))));
             }
 
             TShock.Log.ConsoleInfo($"[CitieZ] {discoveries.Count} cities have been discovered!");
@@ -93,7 +93,7 @@ namespace CitieZ.Db
                             while (result.Read())
                                 discoveries.Add(new CityDiscovery(
                                     result.Get<string>("City"),
-                                    result.Get<string>("Player")));
+                                    TShock.Players.First(p => p.Name == result.Get<string>("Player"))));
                         }
                         return true;
                     }

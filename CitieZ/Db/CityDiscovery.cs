@@ -1,14 +1,16 @@
-﻿namespace CitieZ.Db
+﻿using TShockAPI;
+
+namespace CitieZ.Db
 {
     public class CityDiscovery
     {
-        public CityDiscovery(string cityName, string playerName)
+        public CityDiscovery(string cityName, TSPlayer player)
         {
             CityName = cityName;
-            PlayerName = playerName;
+            Player = player;
         }
 
         public string CityName { get; private set; }
-        public string PlayerName { get; private set; }
+        public TSPlayer Player { get; private set; }
     }
 }
