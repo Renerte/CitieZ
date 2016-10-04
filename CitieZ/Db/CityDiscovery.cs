@@ -4,13 +4,13 @@ namespace CitieZ.Db
 {
     public class CityDiscovery
     {
-        public CityDiscovery(string cityName, TSPlayer player)
+        public CityDiscovery(string cityName, string playerName)
         {
             CityName = cityName;
-            Player = player;
+            PlayerName = playerName;
         }
 
         public string CityName { get; private set; }
-        public TSPlayer Player { get; private set; }
+        public string PlayerName { get; private set; }
     }
 }
