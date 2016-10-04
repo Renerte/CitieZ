@@ -15,6 +15,7 @@ namespace CitieZ.Db
     {
         private readonly List<City> cities = new List<City>();
         private readonly IDbConnection db;
+        private readonly List<CityDiscovery> discoveries = new List<CityDiscovery>();
         private readonly object syncLock = new object();
 
         public CityManager(IDbConnection db)
@@ -31,7 +32,14 @@ namespace CitieZ.Db
                 new SqlColumn("Discovered", MySqlDbType.Text),
                 new SqlColumn("WorldID", MySqlDbType.Int32)));
 
-            using (var result = db.QueryReader("SELECT * FROM Cities WHERE WorldID = @0", Main.worldID))
+            sqlCreator.EnsureTableStructure(new SqlTable("CityDiscoveries",
+                new SqlColumn("ID", MySqlDbType.Int32) {AutoIncrement = true, Primary = true},
+                new SqlColumn("City", MySqlDbType.VarChar, 32) {Unique = true, Length = 32},
+                new SqlColumn("Player", MySqlDbType.VarChar, 32) {Length = 32},
+                new SqlColumn("WorldID", MySqlDbType.Int32)));
+
+            using (
+                var result = db.QueryReader("SELECT * FROM Cities WHERE WorldID = @0", Main.worldID))
             {
                 while (result.Read())
                     cities.Add(new City(
@@ -44,6 +52,16 @@ namespace CitieZ.Db
             }
 
             TShock.Log.ConsoleInfo($"[CitieZ] Loaded {cities.Count} cities.");
+
+            using (var result = db.QueryReader("SELECT * FROM CityDiscoveries WHERE WorldID = @0", Main.worldID))
+            {
+                while (result.Read())
+                    discoveries.Add(new CityDiscovery(
+                        result.Get<string>("City"),
+                        TShock.Users.GetUserByName(result.Get<string>("Player")).Name));
+            }
+
+            TShock.Log.ConsoleInfo($"[CitieZ] {discoveries.Count} cities have been discovered!");
         }
 
         public async Task<bool> ReloadAsync()
@@ -65,6 +83,17 @@ namespace CitieZ.Db
                                     string.IsNullOrWhiteSpace(result.Get<string>("Discovered"))
                                         ? new List<int>()
                                         : result.Get<string>("Discovered").Split(',').Select(int.Parse).ToList()));
+                        }
+
+                        discoveries.Clear();
+                        using (
+                            var result = db.QueryReader("SELECT * FROM CityDiscoveries WHERE WorldID = @0", Main.worldID)
+                        )
+                        {
+                            while (result.Read())
+                                discoveries.Add(new CityDiscovery(
+                                    result.Get<string>("City"),
+                                    TShock.Users.GetUserByName(result.Get<string>("Player")).Name));
                         }
                         return true;
                     }
@@ -223,6 +252,41 @@ namespace CitieZ.Db
                         return db.Query(query,
                                    string.Join(",", city.Discovered),
                                    name) > 0;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    TShock.Log.Error(ex.ToString());
+                    return false;
+                }
+            });
+        }
+
+        public async Task<CityDiscovery> GetDiscoveryAsync(string name)
+        {
+            return await Task.Run(() =>
+            {
+                lock (syncLock)
+                {
+                    return discoveries.Find(d => d.CityName.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+                }
+            });
+        }
+
+        public async Task<bool> AddDiscoveryAsync(string name, TSPlayer player)
+        {
+            return await Task.Run(() =>
+            {
+                try
+                {
+                    lock (syncLock)
+                    {
+                        discoveries.Add(new CityDiscovery(name, player.User.Name));
+                        return
+                            db.Query("INSERT INTO CityDiscoveries (City, Player, WorldID) VALUES (@0, @1, @2)",
+                                name,
+                                player.Name,
+                                Main.worldID) > 0;
                     }
                 }
                 catch (Exception ex)
