@@ -261,5 +261,16 @@ namespace CitieZ.Db
                 }
             });
         }
+
+        public async Task<CityDiscovery> GetDiscoveryAsync(string name)
+        {
+            return await Task.Run(() =>
+            {
+                lock (syncLock)
+                {
+                    return discoveries.Find(d => d.CityName == name);
+                }
+            });
+        }
     }
 }
