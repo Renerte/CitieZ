@@ -31,7 +31,14 @@ namespace CitieZ.Db
                 new SqlColumn("Discovered", MySqlDbType.Text),
                 new SqlColumn("WorldID", MySqlDbType.Int32)));
 
-            using (var result = db.QueryReader("SELECT * FROM Cities WHERE WorldID = @0", Main.worldID))
+            sqlCreator.EnsureTableStructure(new SqlTable("CityDiscoveries",
+                new SqlColumn("ID", MySqlDbType.Int32) {AutoIncrement = true, Primary = true},
+                new SqlColumn("City", MySqlDbType.VarChar, 32) {Unique = true, Length = 32},
+                new SqlColumn("Player", MySqlDbType.VarChar, 32) {Length = 32},
+                new SqlColumn("WorldID", MySqlDbType.Int32)));
+
+            using (
+                var result = db.QueryReader("SELECT * FROM Cities WHERE WorldID = @0", Main.worldID))
             {
                 while (result.Read())
                     cities.Add(new City(
