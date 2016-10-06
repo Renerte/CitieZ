@@ -12,7 +12,7 @@ using TShockAPI.Hooks;
 
 namespace CitieZ
 {
-    [ApiVersion(1, 24)]
+    [ApiVersion(1, 25)]
     public class CitieZ : TerrariaPlugin
     {
         public CitieZ(Main game) : base(game)
