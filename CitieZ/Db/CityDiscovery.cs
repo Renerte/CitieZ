@@ -1,6 +1,4 @@
-﻿using TShockAPI;
-
-namespace CitieZ.Db
+﻿namespace CitieZ.Db
 {
     public class CityDiscovery
     {
