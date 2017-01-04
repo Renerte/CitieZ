@@ -1,4 +1,6 @@
-﻿namespace CitieZ.Util
+﻿using System.Collections.Generic;
+
+namespace CitieZ.Util
 {
     public class Position
     {
@@ -11,9 +13,9 @@
             Y = y;
         }
 
-        public Position(int[] coords)
+        public Position(IReadOnlyList<int> coords)
         {
-            if (coords.Length != 2)
+            if (coords.Count != 2)
                 throw new WrongArraySizeException("Expected 2 coords: x and y");
             X = coords[0];
             Y = coords[1];
