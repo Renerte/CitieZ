@@ -141,7 +141,7 @@ namespace CitieZ.Db
                     return
                         cities.Find(
                             c =>
-                                    c.Name.StartsWith(name, StringComparison.InvariantCultureIgnoreCase));
+                                c.Name.StartsWith(name, StringComparison.InvariantCultureIgnoreCase));
                 }
             });
         }
