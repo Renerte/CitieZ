@@ -54,7 +54,7 @@ namespace CitieZ
 
         private void OnPlayerCommand(PlayerCommandEventArgs e)
         {
-            if (e.Handled || (e.Player == null))
+            if (e.Handled || e.Player == null)
                 return;
         }
 
@@ -73,9 +73,7 @@ namespace CitieZ
                 }
                 var discovery = await Cities.GetDiscoveryAsync(city.Name);
                 if (discovery == null)
-                {
                     return;
-                }
                 e.Player.SendInfoMessage(string.Format(Config.WelcomeMessage, city.Name, discovery.PlayerName));
             }
         }
@@ -151,12 +149,12 @@ namespace CitieZ
                 TShockAPI.Commands.ChatCommands.Add(c);
             };
 
-            Add(new Command(Commands.City, "city")
+            Add(new Command("citiez.tp", Commands.City, "city")
             {
                 HelpText = "Teleports to city, if player has discovered it"
             });
 
-            Add(new Command(Commands.Manage, "citiez")
+            Add(new Command("citiez.manage", Commands.Manage, "citiez")
             {
                 HelpText = "Manages cities"
             });
