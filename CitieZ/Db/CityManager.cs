@@ -58,7 +58,7 @@ namespace CitieZ.Db
                 while (result.Read())
                     discoveries.Add(new CityDiscovery(
                         result.Get<string>("City"),
-                        TShock.Users.GetUserByName(result.Get<string>("Player")).Name));
+                        TShock.UserAccounts.GetUserAccountByName(result.Get<string>("Player")).Name));
             }
 
             TShock.Log.ConsoleInfo($"[CitieZ] {discoveries.Count} cities have been discovered!");
@@ -93,7 +93,7 @@ namespace CitieZ.Db
                             while (result.Read())
                                 discoveries.Add(new CityDiscovery(
                                     result.Get<string>("City"),
-                                    TShock.Users.GetUserByName(result.Get<string>("Player")).Name));
+                                    TShock.UserAccounts.GetUserAccountByName(result.Get<string>("Player")).Name));
                         }
                         return true;
                     }
@@ -248,7 +248,7 @@ namespace CitieZ.Db
                     lock (syncLock)
                     {
                         var city = cities.Find(c => c.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
-                        city.Discovered.Add(player.User.ID);
+                        city.Discovered.Add(player.Account.ID);
                         return db.Query(query,
                                    string.Join(",", city.Discovered),
                                    name) > 0;
@@ -281,7 +281,7 @@ namespace CitieZ.Db
                 {
                     lock (syncLock)
                     {
-                        discoveries.Add(new CityDiscovery(name, player.User.Name));
+                        discoveries.Add(new CityDiscovery(name, player.Account.Name));
                         return
                             db.Query("INSERT INTO CityDiscoveries (City, Player, WorldID) VALUES (@0, @1, @2)",
                                 name,
