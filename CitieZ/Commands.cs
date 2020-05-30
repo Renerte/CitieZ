@@ -14,7 +14,7 @@ namespace CitieZ
                 return;
             }
             var city = await CitieZ.Cities.GetAsync(e.Parameters[0]);
-            if (city != null && (city.Discovered.Contains(e.Player.User.ID) || e.Player.HasPermission("citiez.all")))
+            if (city != null && (city.Discovered.Contains(e.Player.Account.ID) || e.Player.HasPermission("citiez.all")))
             {
                 e.Player.SendInfoMessage(string.Format(CitieZ.Config.TeleportingToCity, city.Name));
                 e.Player.Teleport(city.Warp.X * 16, city.Warp.Y * 16);

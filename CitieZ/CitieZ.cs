@@ -12,7 +12,7 @@ using TShockAPI.Hooks;
 
 namespace CitieZ
 {
-    [ApiVersion(2, 0)]
+    [ApiVersion(2, 1)]
     public class CitieZ : TerrariaPlugin
     {
         public CitieZ(Main game) : base(game)
@@ -64,7 +64,7 @@ namespace CitieZ
             if (city != null)
             {
                 var first = city.Discovered.Count == 0;
-                if (!e.Player.HasPermission("citiez.all") && !city.Discovered.Contains(e.Player.User.ID) &&
+                if (!e.Player.HasPermission("citiez.all") && !city.Discovered.Contains(e.Player.Account.ID) &&
                     await Cities.DiscoverAsync(city.Name, e.Player))
                 {
                     if (first && await Cities.AddDiscoveryAsync(city.Name, e.Player))
@@ -74,7 +74,7 @@ namespace CitieZ
                 var discovery = await Cities.GetDiscoveryAsync(city.Name);
                 if (discovery == null)
                     return;
-                e.Player.SendInfoMessage(string.Format(Config.WelcomeMessage, city.Name, discovery.PlayerName));
+                e.Player.SendInfoMessage(string.Format(Config.WelcomeMessage, city.Name, discovery.User.Name));
             }
         }
 
@@ -140,14 +140,11 @@ namespace CitieZ
 
             #region Commands
 
-            //Allows overriding of already created commands.
-            Action<Command> Add = c =>
+            void Add(Command c)
             {
-                //Finds any commands with names and aliases that match the new command and removes them.
                 TShockAPI.Commands.ChatCommands.RemoveAll(c2 => c2.Names.Exists(s2 => c.Names.Contains(s2)));
-                //Then adds the new command.
                 TShockAPI.Commands.ChatCommands.Add(c);
-            };
+            }
 
             Add(new Command("citiez.tp", Commands.City, "city")
             {

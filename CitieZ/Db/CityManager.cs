@@ -35,7 +35,7 @@ namespace CitieZ.Db
             sqlCreator.EnsureTableStructure(new SqlTable("CityDiscoveries",
                 new SqlColumn("ID", MySqlDbType.Int32) {AutoIncrement = true, Primary = true},
                 new SqlColumn("City", MySqlDbType.VarChar, 32) {Unique = true, Length = 32},
-                new SqlColumn("Player", MySqlDbType.VarChar, 32) {Length = 32},
+                new SqlColumn("UserID", MySqlDbType.Int32, 32) {Length = 32},
                 new SqlColumn("WorldID", MySqlDbType.Int32)));
 
             using (
@@ -58,7 +58,7 @@ namespace CitieZ.Db
                 while (result.Read())
                     discoveries.Add(new CityDiscovery(
                         result.Get<string>("City"),
-                        TShock.Users.GetUserByName(result.Get<string>("Player")).Name));
+                        TShock.UserAccounts.GetUserAccountByID(result.Get<int>("UserID"))));
             }
 
             TShock.Log.ConsoleInfo($"[CitieZ] {discoveries.Count} cities have been discovered!");
@@ -93,7 +93,7 @@ namespace CitieZ.Db
                             while (result.Read())
                                 discoveries.Add(new CityDiscovery(
                                     result.Get<string>("City"),
-                                    TShock.Users.GetUserByName(result.Get<string>("Player")).Name));
+                                    TShock.UserAccounts.GetUserAccountByID(result.Get<int>("UserID"))));
                         }
                         return true;
                     }
@@ -248,7 +248,7 @@ namespace CitieZ.Db
                     lock (syncLock)
                     {
                         var city = cities.Find(c => c.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
-                        city.Discovered.Add(player.User.ID);
+                        city.Discovered.Add(player.Account.ID);
                         return db.Query(query,
                                    string.Join(",", city.Discovered),
                                    name) > 0;
@@ -281,11 +281,11 @@ namespace CitieZ.Db
                 {
                     lock (syncLock)
                     {
-                        discoveries.Add(new CityDiscovery(name, player.User.Name));
+                        discoveries.Add(new CityDiscovery(name, player.Account));
                         return
                             db.Query("INSERT INTO CityDiscoveries (City, Player, WorldID) VALUES (@0, @1, @2)",
                                 name,
-                                player.Name,
+                                player.Account.ID,
                                 Main.worldID) > 0;
                     }
                 }
