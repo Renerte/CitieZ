@@ -74,7 +74,7 @@ namespace CitieZ
                 var discovery = await Cities.GetDiscoveryAsync(city.Name);
                 if (discovery == null)
                     return;
-                e.Player.SendInfoMessage(string.Format(Config.WelcomeMessage, city.Name, discovery.PlayerName));
+                e.Player.SendInfoMessage(string.Format(Config.WelcomeMessage, city.Name, discovery.User.Name));
             }
         }
 
