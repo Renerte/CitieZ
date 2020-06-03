@@ -15,9 +15,12 @@ jobs:
       run: mono nuget.exe restore KitZ.sln
     - name: Build CitieZ
       run: msbuild CitieZ.sln /p:Configuration=Release
-    - name: Upload to release
-      uses: JasonEtco/upload-to-release@master
-      with:
-        args: CitieZ/bin/Release/CitieZ.dll
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: ./CitieZ/bin/Release/CitieZ.dll
+        asset_name: CitieZ.dll
+        asset_content_type: application/vnd.microsoft.portable-executable
