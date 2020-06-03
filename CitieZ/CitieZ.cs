@@ -39,6 +39,7 @@ namespace CitieZ
                 ServerApi.Hooks.GameInitialize.Deregister(this, OnGameInitialize);
                 ServerApi.Hooks.GamePostInitialize.Deregister(this, OnGamePostInitialize);
             }
+
             base.Dispose(disposing);
         }
 
@@ -71,6 +72,7 @@ namespace CitieZ
                         e.Player.SendInfoMessage(string.Format(Config.FirstDiscoveredCity, city.Name));
                     e.Player.SendInfoMessage(string.Format(Config.DiscoveredCity, city.Name));
                 }
+
                 var discovery = await Cities.GetDiscoveryAsync(city.Name);
                 if (discovery == null)
                     return;

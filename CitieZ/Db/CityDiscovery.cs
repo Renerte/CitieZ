@@ -10,7 +10,7 @@ namespace CitieZ.Db
             User = user;
         }
 
-        public string CityName { get; private set; }
-        public UserAccount User { get; private set; }
+        public string CityName { get; }
+        public UserAccount User { get; }
     }
 }

@@ -87,7 +87,8 @@ namespace CitieZ.Db
 
                         discoveries.Clear();
                         using (
-                            var result = db.QueryReader("SELECT * FROM CityDiscoveries WHERE WorldID = @0", Main.worldID)
+                            var result = db.QueryReader("SELECT * FROM CityDiscoveries WHERE WorldID = @0",
+                                Main.worldID)
                         )
                         {
                             while (result.Read())
@@ -95,6 +96,7 @@ namespace CitieZ.Db
                                     result.Get<string>("City"),
                                     TShock.UserAccounts.GetUserAccountByID(result.Get<int>("UserID"))));
                         }
+
                         return true;
                     }
                 }
@@ -161,8 +163,8 @@ namespace CitieZ.Db
                     {
                         city.Warp = warpPosition;
                         return db.Query(query,
-                                   warpPosition,
-                                   name) > 0;
+                            warpPosition,
+                            name) > 0;
                     }
                 }
                 catch (Exception ex)
@@ -188,8 +190,8 @@ namespace CitieZ.Db
                     {
                         city.RegionName = regionName;
                         return db.Query(query,
-                                   regionName,
-                                   name) > 0;
+                            regionName,
+                            name) > 0;
                     }
                 }
                 catch (Exception ex)
@@ -230,7 +232,8 @@ namespace CitieZ.Db
             {
                 lock (syncLock)
                 {
-                    return cities.Find(c => c.RegionName.Equals(regionName, StringComparison.InvariantCultureIgnoreCase));
+                    return cities.Find(
+                        c => c.RegionName.Equals(regionName, StringComparison.InvariantCultureIgnoreCase));
                 }
             });
         }
@@ -250,8 +253,8 @@ namespace CitieZ.Db
                         var city = cities.Find(c => c.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
                         city.Discovered.Add(player.Account.ID);
                         return db.Query(query,
-                                   string.Join(",", city.Discovered),
-                                   name) > 0;
+                            string.Join(",", city.Discovered),
+                            name) > 0;
                     }
                 }
                 catch (Exception ex)
