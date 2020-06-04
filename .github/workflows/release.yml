@@ -12,7 +12,7 @@ jobs:
     - name: Install NuGet
       run: wget https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
     - name: Restore packages
-      run: mono nuget.exe restore KitZ.sln
+      run: mono nuget.exe restore CitieZ.sln
     - name: Build CitieZ
       run: msbuild CitieZ.sln /p:Configuration=Release
     - name: Upload Release Asset
