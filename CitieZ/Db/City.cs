@@ -16,7 +16,7 @@ namespace CitieZ.Db
             Discovered = discovered;
         }
 
-        public string Name { get; private set; }
-        public List<int> Discovered { get; private set; }
+        public string Name { get; }
+        public List<int> Discovered { get; }
     }
 }

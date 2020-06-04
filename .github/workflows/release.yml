@@ -1,0 +1,26 @@
+name: Release
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install NuGet
+      run: wget https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
+    - name: Restore packages
+      run: mono nuget.exe restore KitZ.sln
+    - name: Build CitieZ
+      run: msbuild CitieZ.sln /p:Configuration=Release
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: ./CitieZ/bin/Release/CitieZ.dll
+        asset_name: CitieZ.dll
+        asset_content_type: application/vnd.microsoft.portable-executable
